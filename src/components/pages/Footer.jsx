@@ -310,10 +310,10 @@ export default function Footer({ searchRef }) {
           </div>
         </div>
         <div className="absolute bottom-0 translate-y-4 left-0 w-full z-0 hidden lg:flex justify-center items-end pointer-events-none">
-          <StackRead />
-          {/* <div className="text-[245px] lg:text-[260px] font-heading font-extrabold tracking-tighter leading-[0.75] bg-linear-to-b from-transparent via-text-primary/40 to-text-primary/20 bg-clip-text text-transparent select-none pb-0">
+          {/* <StackRead /> */}
+          <div className="text-[245px] lg:text-[260px] font-heading font-extrabold tracking-tighter leading-[0.75] bg-linear-to-b from-transparent via-text-primary/40 to-text-primary/20 bg-clip-text text-transparent select-none pb-0">
             STACKREAD
-          </div> */}
+          </div>
           <div className="absolute inset-0 bg-linear-to-t from-bg-primary/90 via-bg/60 to-transparent pointer-events-none"></div>
         </div>
       </div>
