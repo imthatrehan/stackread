@@ -565,7 +565,7 @@ export default function User() {
                 </svg>
                 <div className="absolute inset-0 flex flex-col justify-center items-center">
                   <span className="text-4xl font-logo font-bold text-bg-primary">
-                    {score}
+                    {Math.floor(score)}
                   </span>
                   <span className="text-[9px] text-text-secondary font-mono tracking-widest">
                     SCORE
