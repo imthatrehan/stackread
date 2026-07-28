@@ -212,7 +212,9 @@ export default function User() {
         if (contribRes.ok) {
           setContribData(await contribRes.json())
         } else {
-          console.warn(`Graph API returned status: ${contribRes.status}. Showing empty grid.`)
+          console.warn(
+            `Graph API returned status: ${contribRes.status}. Showing empty grid.`,
+          )
           setContribData({ total: 0, contributions: [] })
         }
       } catch (e) {
