@@ -32,7 +32,7 @@ export default function HeroSeaction() {
     <>
       <div className="flex justify-center items-center w-full relative z-0 p-10 lg:p-28">
         <div className="flex flex-col gap-y-4 justify-center items-center">
-          <div className="flex justify-center items-center gap-1 lg:gap-2 text-bg-primary bg-bg-primary/15 border-[0.75px] border-bg-primary/40 px-2 lg:px-4 py-1.25 text-[12px] lg:text-md font-para rounded-full">
+          <div className="flex justify-center items-center gap-1 lg:gap-2 text-bg-primary bg-bg-primary/15 border-[0.75px] border-bg-primary/40 px-2 lg:px-4 py-1.25 text-[12px] lg:text-[16px] font-para rounded-full">
             <Sparkles strokeWidth={1.5} size={isDesktop ? 16 : 12} />
             Powered by GitHub API and Google Gemini
           </div>
