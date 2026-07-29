@@ -236,11 +236,9 @@ export default function User() {
         ...new Set(repos.map((r) => r.language).filter(Boolean)),
       ]
       const totalStars = repos.reduce((acc, r) => acc + r.stargazers_count, 0)
-      const totalForks = repos.reduce((acc, r) => acc + r.forks_count, 0)
 
-      const prompt = `Return ONLY a valid JSON. No markdown, no extra text. Analyze this data: 
-      Name: ${userData.name}, Bio: ${userData.bio}, Stars: ${totalStars}, Forks: ${totalForks}, Repos: ${userData.public_repos}, Followers: ${userData.followers}, Langs: ${languages}.
-      Structure: {"developerType": "string", "score": number, "breakdown": {"completeness": number, "quality": number, "impact": number, "diversity": number, "activity": number}, "strengths": ["string"], "weaknesses": ["string"], "verdict": "string"}`
+      const prompt = `Return ONLY a valid JSON. Analyze GitHub dev: Name: ${userData.name}, Bio: ${userData.bio}, Stars: ${totalStars}, Repos: ${userData.public_repos}, Langs: ${languages.join(', ')}. 
+    Structure: {"developerType": "string", "score": number, "breakdown": {"completeness": number, "quality": number, "impact": number, "diversity": number, "activity": number}, "strengths": ["string"], "weaknesses": ["string"], "verdict": "string"}`
 
       const geminiRes = await fetch(
         `/.netlify/functions/gemini?key=${GEMINI_API_KEY}`,
@@ -248,24 +246,18 @@ export default function User() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            model: 'gemini-3.6-flash',
-            input: prompt,
-            stream: false,
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { responseMimeType: 'application/json' },
           }),
         },
       )
 
-      if (!geminiRes.ok) {
-        if (geminiRes.status === 429) throw new Error('Rate Limit')
-        throw new Error(`API Error: ${geminiRes.status}`)
-      }
+      if (!geminiRes.ok) throw new Error(`API Error: ${geminiRes.status}`)
 
       const geminiJson = await geminiRes.json()
-      const outputStep = geminiJson.steps?.find(
-        (step) => step.type === 'model_output',
-      )
-      if (outputStep && outputStep.content && outputStep.content.length > 0) {
-        const rawText = outputStep.content[0].text
+      const rawText = geminiJson?.candidates?.[0]?.content?.parts?.[0]?.text
+
+      if (rawText) {
         setAnalysis(JSON.parse(rawText))
         setAiSuccess(true)
       } else {
@@ -273,18 +265,15 @@ export default function User() {
       }
     } catch (e) {
       console.error('AI Error:', e)
-      setAiSuccess(false)
-      if (userData && repos) {
-        const fallbackResult = calculateFallbackScore(userData, repos)
-        setAnalysis((prev) => ({
-          developerType: 'Open Source Enthusiast (Fallback)',
-          score: fallbackResult.total,
-          breakdown: fallbackResult.breakdown,
-          strengths: ['Active contributor', 'Decent repository portfolio'],
-          weaknesses: ['AI unavailable due to rate limits.'],
-          verdict: 'AI is offline. Stats look solid!',
-        }))
-      }
+      const fallbackResult = calculateFallbackScore(userData, repos)
+      setAnalysis({
+        developerType: 'System Architect (Fallback)',
+        score: fallbackResult.total,
+        breakdown: fallbackResult.breakdown,
+        strengths: ['Solid repository growth', 'Consistent language usage'],
+        weaknesses: ['AI temporarily unavailable'],
+        verdict: 'Stats indicate a highly capable engineer.',
+      })
     } finally {
       setAiLoading(false)
     }

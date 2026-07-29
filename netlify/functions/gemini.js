@@ -1,43 +1,51 @@
-export default async function handler(event) {
+export const handler = async (event) => {
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  };
+
+  if (event.httpMethod === 'OPTIONS') {
+    return { statusCode: 204, headers };
+  }
+
   if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method Not Allowed' };
+    return { statusCode: 405, headers, body: 'Method Not Allowed' };
   }
 
   const { key } = event.queryStringParameters;
-
   if (!key) {
     return {
       statusCode: 400,
-      body: JSON.stringify({ error: "API key is missing. Please set VITE_GEMINI_API_KEY in Netlify env and redeploy." })
+      headers,
+      body: JSON.stringify({ error: 'API key missing' }),
     };
   }
 
   try {
     const body = JSON.parse(event.body);
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/interactions?key=${key}`, {
+
+    // Endpoint for Gemini 2.0 Flash
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`;
+
+    const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      return {
-        statusCode: response.status,
-        body: JSON.stringify(errorData)
-      };
-    }
-
     const data = await response.json();
+
     return {
-      statusCode: 200,
+      statusCode: response.ok ? 200 : response.status,
+      headers: { ...headers, 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     };
   } catch (error) {
-    console.error("Netlify Function Error:", error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: "Internal Server Error in Netlify Function" })
+      headers,
+      body: JSON.stringify({ error: error.message }),
     };
   }
-}
+};
