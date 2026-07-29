@@ -106,8 +106,19 @@ const SpecularButton = ({
     if (!btn || !fx) return;
 
     const dpr = window.devicePixelRatio || 1;
-    const renderer = new Renderer({ alpha: true, premultipliedAlpha: true, antialias: true, dpr });
-    const gl = renderer.gl;
+    
+    // 🟢 FIX: Safe WebGL initialization with try-catch and null checks
+    let renderer;
+    let gl;
+    try {
+      renderer = new Renderer({ alpha: true, premultipliedAlpha: true, antialias: true, dpr });
+      gl = renderer.gl;
+    } catch (e) {
+      console.warn('SpecularButton: WebGL initialization failed, falling back to safe mode.', e);
+      return; // If WebGL fails, the button will just work normally without the effect
+    }
+    if (!gl) return; // Context not available
+
     gl.clearColor(0, 0, 0, 0);
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
@@ -140,8 +151,6 @@ const SpecularButton = ({
 
     const sizeRef = { w: 1, h: 1 };
     const resize = () => {
-      // Fractional size + explicit center keep the SDF pinned to the exact
-      // CSS border, instead of drifting up to a pixel from offsetWidth rounding.
       const rect = btn.getBoundingClientRect();
       const w = rect.width;
       const h = rect.height;
@@ -155,8 +164,6 @@ const SpecularButton = ({
     ro.observe(btn);
     resize();
 
-    // Light angle steers toward the pointer (anywhere on the page) and falls
-    // back to a slow sweep when the pointer hasn't moved yet.
     let pointerAngle = null;
     let proximityT = 0;
     const onPointerMove = e => {
@@ -166,8 +173,6 @@ const SpecularButton = ({
       const dx = Math.max(rect.left - e.clientX, 0, e.clientX - rect.right);
       const dy = Math.max(rect.top - e.clientY, 0, e.clientY - rect.bottom);
       const dist = Math.hypot(dx, dy);
-      // Over the button itself the light settles on the diagonal (framing the
-      // corners) and gently sways with the cursor position within the button.
       if (dist === 0) {
         const nx = (e.clientX - cx) / (rect.width / 2);
         const ny = (cy - e.clientY) / (rect.height / 2);
@@ -201,7 +206,6 @@ const SpecularButton = ({
       const diff = ((target - angle + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
       angle += diff * (1 - Math.exp(-dt * 7));
 
-      // Shine fades in with pointer proximity unless autoAnimate keeps it on
       const brightTarget = p.autoAnimate ? 1 : proximityT;
       bright += (brightTarget - bright) * (1 - Math.exp(-dt * 8));
 
