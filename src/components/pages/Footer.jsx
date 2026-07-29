@@ -113,7 +113,7 @@ export default function Footer({ searchRef }) {
           </div>
         </div>
       </div>
-      <div className="bg-bg flex flex-col w-full relative lg:min-h-[63vh] overflow-hidden">
+      <div className="bg-bg flex flex-col w-full relative lg:min-h-[64vh] overflow-hidden">
         <div className="flex justify-evenly flex-row items-center px-6 py-8 relative z-10">
           <div className="flex flex-col justify-center items-center gap-y-3">
             <div className="flex justify-center items-center gap-2 font-logo font-bold text-text-primary text-3xl mb-2">
@@ -310,10 +310,10 @@ export default function Footer({ searchRef }) {
           </div>
         </div>
         <div className="absolute bottom-0 translate-y-4 left-0 w-full z-0 hidden lg:flex justify-center items-end pointer-events-none">
-          {/* <StackRead /> */}
-          <div className="text-[245px] lg:text-[260px] font-heading font-extrabold tracking-tighter leading-[0.75] bg-linear-to-b from-transparent via-text-primary/40 to-text-primary/20 bg-clip-text text-transparent select-none pb-0">
+          <StackRead />
+          {/* <div className="text-[245px] lg:text-[260px] font-heading font-extrabold tracking-tighter leading-[0.75] bg-linear-to-b from-transparent via-text-primary/40 to-text-primary/20 bg-clip-text text-transparent select-none pb-0">
             STACKREAD
-          </div>
+          </div> */}
           <div className="absolute inset-0 bg-linear-to-t from-bg-primary/90 via-bg/60 to-transparent pointer-events-none"></div>
         </div>
       </div>
