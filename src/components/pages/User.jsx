@@ -243,7 +243,7 @@ export default function User() {
       Structure: {"developerType": "string", "score": number, "breakdown": {"completeness": number, "quality": number, "impact": number, "diversity": number, "activity": number}, "strengths": ["string"], "weaknesses": ["string"], "verdict": "string"}`
 
       const geminiRes = await fetch(
-        `/api/gemini/v1beta/interactions?key=${GEMINI_API_KEY}`,
+        `/.netlify/functions/gemini?key=${GEMINI_API_KEY}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
